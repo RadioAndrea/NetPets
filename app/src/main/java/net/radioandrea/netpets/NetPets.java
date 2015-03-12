@@ -1,17 +1,28 @@
 package net.radioandrea.netpets;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SpinnerAdapter;
 
 
 public class NetPets extends ActionBarActivity {
 
+    SpinnerAdapter adapter;
+    String[] list;
+    ActionBar actionBar;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_net_pets);
+/*        actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.action_list, android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(mSpinnerAdapter, null);*/
     }
 
 
@@ -36,4 +47,5 @@ public class NetPets extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

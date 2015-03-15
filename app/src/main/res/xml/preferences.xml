@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/net_options"
+        android:key="pref_key_storage_settings">
+        <CheckBoxPreference
+            android:key="Temp"
+            android:title="Placeholder"
+            android:summary="Helper Derp"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

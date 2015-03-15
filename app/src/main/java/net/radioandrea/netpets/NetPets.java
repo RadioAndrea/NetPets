@@ -1,6 +1,7 @@
 package net.radioandrea.netpets;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -40,9 +41,19 @@ public class NetPets extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, NetPetSettings.class));
-            return true;
+        switch(id){
+            case R.id.action_settings:
+                startActivity(new Intent(this, NetPetSettings.class));
+                return true;
+            case R.id.action_about:
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
+                dlgAlert.setMessage(getString(R.string.about_message));
+                dlgAlert.setTitle(getString(R.string.about_title));
+                dlgAlert.setPositiveButton(getString(R.string.ok), null);
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+                return true;
+            default:
         }
 
         return super.onOptionsItemSelected(item);

@@ -3,6 +3,7 @@ package net.radioandrea.netpets;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -28,11 +29,10 @@ import java.io.InputStreamReader;
 
 
 public class NetPets extends ActionBarActivity {
-
-    private static final String location = "www.tetonsoftware.com/pets/pets.json";
     SpinnerAdapter adapter;
     String[] list;
     android.support.v7.app.ActionBar actionBar;
+    TextView mySmallText;
 
 
     @Override
@@ -40,6 +40,8 @@ public class NetPets extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_pets);
         addCustomSpinnerToActionBar();
+        mySmallText = (TextView) findViewById(R.id.textView);
+        //textViewNetworking();
 
     }
 
@@ -100,48 +102,63 @@ public class NetPets extends ActionBarActivity {
         });
     }
 
-    private void textViewNetworking()
+    public void textViewNetworking()
     {
-
-
+        new NetTask().execute("");
     }
 
-    private String grabJSON(String url)
+
+    private class NetTask extends AsyncTask<String, Void, String>
     {
-        final int httpOK = 200;
-        StringBuilder sBuilder = new StringBuilder();
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url);
 
-        try{
-            HttpResponse httpStatus = httpClient.execute(httpGet);
-            if(httpStatus.getStatusLine().getStatusCode() == httpOK)
-            {
-                HttpEntity entity = httpStatus.getEntity();
-                BufferedReader bReader =
-                        new BufferedReader(new InputStreamReader(entity.getContent()));
-                String line;
-                while ((line = bReader.readLine()) != null)
+        @Override
+        protected String doInBackground(String... params) {
+            final int httpOK = 200;
+            StringBuilder sBuilder = new StringBuilder();
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(getString(R.string.teton));
+
+            try{
+                HttpResponse httpStatus = httpClient.execute(httpGet);
+                if(httpStatus.getStatusLine().getStatusCode() == httpOK)
                 {
-                    sBuilder.append(line);
+                    HttpEntity entity = httpStatus.getEntity();
+                    BufferedReader bReader =
+                            new BufferedReader(new InputStreamReader(entity.getContent()));
+                    String line;
+                    while ((line = bReader.readLine()) != null)
+                    {
+                        sBuilder.append(line);
+                    }
                 }
+                else
+                {
+                    sBuilder.append("Shit Broked");
+                }
+
+                return sBuilder.toString();
             }
-            else
+            catch (ClientProtocolException e)
             {
-                sBuilder.append("Shit Broked");
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
 
-            return sBuilder.toString();
-        }
-        catch (ClientProtocolException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            return "Some shit broke hardcore-like";
         }
 
-        return "Some shit broke hardcore-like";
+        @Override
+        protected void onPostExecute(String result) {
+            mySmallText.setText(result);
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
     }
 }

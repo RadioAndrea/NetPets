@@ -15,9 +15,21 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 
 public class NetPets extends ActionBarActivity {
 
+    private static final String location = "www.tetonsoftware.com/pets/pets.json";
     SpinnerAdapter adapter;
     String[] list;
     android.support.v7.app.ActionBar actionBar;
@@ -27,8 +39,8 @@ public class NetPets extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_pets);
-
         addCustomSpinnerToActionBar();
+
     }
 
 
@@ -75,7 +87,9 @@ public class NetPets extends ActionBarActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
-                if (arg0.getChildAt(SELECTED_ITEM) != null ) {
+                if (arg0.getChildAt(SELECTED_ITEM) != null )
+                {
+                    //todo make this do useful things :P
                     ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
                     Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
                 }
@@ -84,5 +98,50 @@ public class NetPets extends ActionBarActivity {
             @Override
             public void onNothingSelected(AdapterView<?> arg0){}
         });
+    }
+
+    private void textViewNetworking()
+    {
+
+
+    }
+
+    private String grabJSON(String url)
+    {
+        final int httpOK = 200;
+        StringBuilder sBuilder = new StringBuilder();
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(url);
+
+        try{
+            HttpResponse httpStatus = httpClient.execute(httpGet);
+            if(httpStatus.getStatusLine().getStatusCode() == httpOK)
+            {
+                HttpEntity entity = httpStatus.getEntity();
+                BufferedReader bReader =
+                        new BufferedReader(new InputStreamReader(entity.getContent()));
+                String line;
+                while ((line = bReader.readLine()) != null)
+                {
+                    sBuilder.append(line);
+                }
+            }
+            else
+            {
+                sBuilder.append("Shit Broked");
+            }
+
+            return sBuilder.toString();
+        }
+        catch (ClientProtocolException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return "Some shit broke hardcore-like";
     }
 }

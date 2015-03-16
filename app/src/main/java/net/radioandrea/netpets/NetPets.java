@@ -1,13 +1,18 @@
 package net.radioandrea.netpets;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -15,18 +20,15 @@ public class NetPets extends ActionBarActivity {
 
     SpinnerAdapter adapter;
     String[] list;
-    ActionBar actionBar;
+    android.support.v7.app.ActionBar actionBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_pets);
-/*        actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.action_list, android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(mSpinnerAdapter, null);*/
+
+        addCustomSpinnerToActionBar();
     }
 
 
@@ -59,4 +61,28 @@ public class NetPets extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    Spinner spinner;
+    private void addCustomSpinnerToActionBar() {
+        actionBar =  getSupportActionBar();
+
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.spinner);
+        spinner = (Spinner) actionBar.getCustomView().findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.action_list,R.layout.spinner_layout);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public static final  int SELECTED_ITEM = 0;
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
+                if (arg0.getChildAt(SELECTED_ITEM) != null ) {
+                    ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
+                    Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0){}
+        });
+    }
 }

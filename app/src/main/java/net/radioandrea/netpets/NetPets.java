@@ -22,10 +22,14 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 
 public class NetPets extends ActionBarActivity {
@@ -57,7 +61,7 @@ public class NetPets extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch(id){
+        switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(this, NetPetSettings.class));
                 return true;
@@ -76,6 +80,7 @@ public class NetPets extends ActionBarActivity {
     }
 
     Spinner spinner;
+
     private void addCustomSpinnerToActionBar() {
         actionBar = getSupportActionBar();
 
@@ -86,8 +91,7 @@ public class NetPets extends ActionBarActivity {
     }
 
 
-    private class NetTask extends AsyncTask<String, Void, String>
-    {
+    private class NetTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -98,19 +102,15 @@ public class NetPets extends ActionBarActivity {
 
             try {
                 HttpResponse httpStatus = httpClient.execute(httpGet);
-                if(httpStatus.getStatusLine().getStatusCode() == httpOK)
-                {
+                if (httpStatus.getStatusLine().getStatusCode() == httpOK) {
                     HttpEntity entity = httpStatus.getEntity();
                     BufferedReader bReader =
                             new BufferedReader(new InputStreamReader(entity.getContent()));
                     String line;
-                    while ((line = bReader.readLine()) != null)
-                    {
+                    while ((line = bReader.readLine()) != null) {
                         sBuilder.append(line);
                     }
-                }
-                else
-                {
+                } else {
                     sBuilder.append("Shit Broked");
                 }
 
@@ -129,30 +129,45 @@ public class NetPets extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             //Add JSON Processing here
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(NetPets.this, R.array.action_list, R.layout.spinner_layout);
-            spinner.setAdapter(adapter);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                public static final  int SELECTED_ITEM = 0;
+//            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(NetPets.this, R.array.action_list, R.layout.spinner_layout);
 
-                @Override
-                public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
-                    if (arg0.getChildAt(SELECTED_ITEM) != null )
-                    {
-                        //todo make this do useful things :P
-                        ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
-                        Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
-                    }
+            try {
+                JSONArray pets = new JSONObject(result).getJSONArray("pets");
+                ArrayList<String> list = new ArrayList<String>();
+                for(int i = 0; i < pets.length(); i++) {
+                    list.add(pets.getString(i));
                 }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_list_item_1, list);
+                spinner.setAdapter(adapter);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    public static final int SELECTED_ITEM = 0;
 
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0){}
-            });
+                    @Override
+                    public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
+                        if (arg0.getChildAt(SELECTED_ITEM) != null) {
+                            //todo make this do useful things :P
+                            ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
+                            Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> arg0) {
+                    }
+                });
+            } catch(JSONException jse) {
+                jse.printStackTrace();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+        }
 
         @Override
-        protected void onProgressUpdate(Void... values) {}
+        protected void onProgressUpdate(Void... values) {
+        }
     }
 }

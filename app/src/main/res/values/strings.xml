@@ -12,5 +12,13 @@
     <string name="about_title">About Us</string>
     <string name="about_message">This is the 3rd Project in CNU CPSC 475.\nThis project was coded together by Andrea and Allen.\n</string>
     <string name="ok">OK</string>
-    <string name="teton">http://www.tetonsoftware.com/pets/pets.json</string>
+    <string name="teton">http://www.tetonsoftware.com/pets/</string>
+
+    <string name="pets_json">pets.json</string>
+
+    <string name="site_default">http://www.tetonsoftware.com/pets/</string>
+    <string name="site_key">theWebSite</string>
+    <string name="site_title">Websites</string>
+    <string name="site_dialog_title">Choose a website to load from below</string>
+
 </resources>

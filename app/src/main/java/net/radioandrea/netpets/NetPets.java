@@ -2,9 +2,11 @@ package net.radioandrea.netpets;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,11 +39,13 @@ public class NetPets extends ActionBarActivity {
     String[] list;
     android.support.v7.app.ActionBar actionBar;
     TextView mySmallText;
+    SharedPreferences prefs;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_net_pets);
         addCustomSpinnerToActionBar();
         mySmallText = (TextView) findViewById(R.id.textView);
@@ -87,7 +91,7 @@ public class NetPets extends ActionBarActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.spinner);
         spinner = (Spinner) actionBar.getCustomView().findViewById(R.id.spinner);
-        new NetTask().execute(getString(R.string.teton));
+        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
     }
 
 
@@ -98,7 +102,7 @@ public class NetPets extends ActionBarActivity {
             final int httpOK = 200;
             StringBuilder sBuilder = new StringBuilder();
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(params[0]);
+            HttpGet httpGet = new HttpGet(params[0] + getString(R.string.pets_json));
 
             try {
                 HttpResponse httpStatus = httpClient.execute(httpGet);
@@ -115,10 +119,6 @@ public class NetPets extends ActionBarActivity {
                 }
 
                 return sBuilder.toString();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -128,16 +128,14 @@ public class NetPets extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            //Add JSON Processing here
-//            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(NetPets.this, R.array.action_list, R.layout.spinner_layout);
-
             try {
                 JSONArray pets = new JSONObject(result).getJSONArray("pets");
-                ArrayList<String> list = new ArrayList<String>();
-                for(int i = 0; i < pets.length(); i++) {
-                    list.add(pets.getString(i));
+                ArrayList<NetPetJSON> list = new ArrayList<>();
+                for (int i = 0; i < pets.length(); i++) {
+                    list.add(new NetPetJSON(pets.getJSONObject(i)));
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_list_item_1, list);
+
+                ArrayAdapter<NetPetJSON> adapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_list_item_1, list);
                 spinner.setAdapter(adapter);
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     public static final int SELECTED_ITEM = 0;
@@ -147,7 +145,9 @@ public class NetPets extends ActionBarActivity {
                         if (arg0.getChildAt(SELECTED_ITEM) != null) {
                             //todo make this do useful things :P
                             ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
-                            Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                            NetPetJSON pet = (NetPetJSON) arg0.getItemAtPosition(pos);
+                            Toast.makeText(NetPets.this, pet.getFileURL(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(NetPets.this, "Fucking test", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -155,10 +155,37 @@ public class NetPets extends ActionBarActivity {
                     public void onNothingSelected(AdapterView<?> arg0) {
                     }
                 });
-            } catch(JSONException jse) {
-                jse.printStackTrace();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+
+        private class NetPetJSON {
+            protected JSONObject pet;
+            protected String site;
+
+            protected NetPetJSON(JSONObject pet) {
+                this.pet = pet;
+                this.site = prefs.getString(getString(R.string.site_key), "");
+            }
+
+            public String getFileURL() {
+                try {
+                    return site + pet.getString("file");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "";
+                }
+            }
+
+            @Override
+            public String toString() {
+                try {
+                    return pet.getString("name");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "";
+                }
             }
         }
 

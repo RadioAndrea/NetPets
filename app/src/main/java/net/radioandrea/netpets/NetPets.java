@@ -77,34 +77,12 @@ public class NetPets extends ActionBarActivity {
 
     Spinner spinner;
     private void addCustomSpinnerToActionBar() {
-        actionBar =  getSupportActionBar();
+        actionBar = getSupportActionBar();
 
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.spinner);
         spinner = (Spinner) actionBar.getCustomView().findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.action_list,R.layout.spinner_layout);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public static final  int SELECTED_ITEM = 0;
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
-                if (arg0.getChildAt(SELECTED_ITEM) != null )
-                {
-                    //todo make this do useful things :P
-                    ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
-                    Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0){}
-        });
-    }
-
-    public void textViewNetworking()
-    {
-        new NetTask().execute("");
+        new NetTask().execute(getString(R.string.teton));
     }
 
 
@@ -116,9 +94,9 @@ public class NetPets extends ActionBarActivity {
             final int httpOK = 200;
             StringBuilder sBuilder = new StringBuilder();
             HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(getString(R.string.teton));
+            HttpGet httpGet = new HttpGet(params[0]);
 
-            try{
+            try {
                 HttpResponse httpStatus = httpClient.execute(httpGet);
                 if(httpStatus.getStatusLine().getStatusCode() == httpOK)
                 {
@@ -137,13 +115,11 @@ public class NetPets extends ActionBarActivity {
                 }
 
                 return sBuilder.toString();
-            }
-            catch (ClientProtocolException e)
-            {
+            } catch (ClientProtocolException e) {
                 e.printStackTrace();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -152,7 +128,25 @@ public class NetPets extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            mySmallText.setText(result);
+            //Add JSON Processing here
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(NetPets.this, R.array.action_list, R.layout.spinner_layout);
+            spinner.setAdapter(adapter);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public static final  int SELECTED_ITEM = 0;
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
+                    if (arg0.getChildAt(SELECTED_ITEM) != null )
+                    {
+                        //todo make this do useful things :P
+                        ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
+                        Toast.makeText(NetPets.this, (String) arg0.getItemAtPosition(pos), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0){}
+            });
         }
 
         @Override

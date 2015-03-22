@@ -5,4 +5,22 @@
         <item>"Sarah"</item>
         <item>"Ted"</item>
     </string-array>
+
+    <string-array name="site_values_list">
+        <item>
+            http://www.tetonsoftware.com/pets/
+        </item>
+        <item>
+            www.pcs.cnu.edu/~kperkins/pets/
+        </item>
+    </string-array>
+
+    <string-array name="site_list">
+        <item>
+            Teton Software
+        </item>
+        <item>
+            PCSE at CNU
+        </item>
+    </string-array>
 </resources>

@@ -45,16 +45,11 @@ public class NetPets extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //setContentView(R.layout.activity_net_pets);
         addCustomSpinnerToActionBar();
-        //textViewNetworking();
         mywebImage = new WebImage(this);
-
-        mywebImage.setScaleType(ImageView.ScaleType.FIT_XY);
-        mywebImage.setImageUrl("http://www.tetonsoftware.com/pets/p0.png");
+        mywebImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mywebImage.setImageResource(R.drawable.world);
         setContentView(mywebImage);
-        //setContentView(mywebImage);
-
     }
 
 

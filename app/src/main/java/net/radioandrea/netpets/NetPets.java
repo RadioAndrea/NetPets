@@ -38,7 +38,6 @@ public class NetPets extends ActionBarActivity {
     SpinnerAdapter adapter;
     String[] list;
     android.support.v7.app.ActionBar actionBar;
-    TextView mySmallText;
     SharedPreferences prefs;
 
 
@@ -48,7 +47,6 @@ public class NetPets extends ActionBarActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_net_pets);
         addCustomSpinnerToActionBar();
-        mySmallText = (TextView) findViewById(R.id.textView);
         //textViewNetworking();
 
     }

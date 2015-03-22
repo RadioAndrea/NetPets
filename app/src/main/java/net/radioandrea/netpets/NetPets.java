@@ -8,11 +8,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -20,16 +22,13 @@ import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -39,15 +38,22 @@ public class NetPets extends ActionBarActivity {
     String[] list;
     android.support.v7.app.ActionBar actionBar;
     SharedPreferences prefs;
+    WebImage mywebImage;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        setContentView(R.layout.activity_net_pets);
+        //setContentView(R.layout.activity_net_pets);
         addCustomSpinnerToActionBar();
         //textViewNetworking();
+        mywebImage = new WebImage(this);
+
+        mywebImage.setScaleType(ImageView.ScaleType.FIT_XY);
+        mywebImage.setImageUrl("http://www.tetonsoftware.com/pets/p0.png");
+        setContentView(mywebImage);
+        //setContentView(mywebImage);
 
     }
 
@@ -114,11 +120,13 @@ public class NetPets extends ActionBarActivity {
                     }
                 } else {
                     sBuilder.append("Shit Broked");
+                    Log.e("NetPets", "HTTP not OK!");
                 }
 
                 return sBuilder.toString();
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e("NetPets", "NetTask Exception!");
             }
 
             return "Some shit broke hardcore-like";
@@ -145,6 +153,7 @@ public class NetPets extends ActionBarActivity {
                             ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
                             NetPetJSON pet = (NetPetJSON) arg0.getItemAtPosition(pos);
                             Toast.makeText(NetPets.this, pet.getFileURL(), Toast.LENGTH_SHORT).show();
+                            mywebImage.setImageUrl(pet.getFileURL());
 //                            Toast.makeText(NetPets.this, "Fucking test", Toast.LENGTH_SHORT).show();
                         }
                     }

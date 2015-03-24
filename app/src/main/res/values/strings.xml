@@ -10,7 +10,7 @@
     <string name="test">Testing</string>
 
     <string name="about_title">About Us</string>
-    <string name="about_message">This is the 3rd Project in CNU CPSC 475.\nThis project was coded together by Andrea and Allen.\n</string>
+    <string name="about_message">This is the 3rd Project in CNU CPSC 475. This project was coded together by Andrea and Allen.\nVersion : 0.1.21</string>
     <string name="ok">OK</string>
     <string name="teton">http://www.tetonsoftware.com/pets/</string>
 

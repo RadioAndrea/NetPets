@@ -41,6 +41,8 @@ public class NetPets extends ActionBarActivity {
     SharedPreferences prefs;
     WebImage mywebImage;
 
+    private static final int SETTINGRESULT = 1337;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class NetPets extends ActionBarActivity {
 
         switch (id) {
             case R.id.action_settings:
-                startActivity(new Intent(this, NetPetSettings.class));
+                startActivityForResult(new Intent(this, NetPetSettings.class), SETTINGRESULT);
                 return true;
             case R.id.action_about:
                 AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
@@ -81,6 +83,14 @@ public class NetPets extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SETTINGRESULT) {
+            new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+        }
     }
 
     Spinner spinner;

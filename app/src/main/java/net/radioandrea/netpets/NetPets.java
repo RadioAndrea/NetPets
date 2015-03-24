@@ -1,6 +1,7 @@
 package net.radioandrea.netpets;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -144,20 +145,65 @@ public class NetPets extends ActionBarActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long rowid) {
                         if (arg0.getChildAt(SELECTED_ITEM) != null) {
-                            //todo make this do useful things :P
-                            ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
-                            NetPetJSON pet = (NetPetJSON) arg0.getItemAtPosition(pos);
-                            Toast.makeText(NetPets.this, pet.getFileURL(), Toast.LENGTH_SHORT).show();
-                            mywebImage.setImageUrl(pet.getFileURL());
-//                            Toast.makeText(NetPets.this, "Fucking test", Toast.LENGTH_SHORT).show();
+                            if(arg0.getChildAt(SELECTED_ITEM).toString().contains("Shit Broked"))
+                            {
+                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(NetPets.this);
+                                dlgAlert.setMessage("but I can't load that!\nCheck your network settings!");
+                                dlgAlert.setTitle("I'm Sorry Dave...");
+                                dlgAlert.setPositiveButton("Try Again", new DialogInterface.OnClickListener()
+                                {
+                                    public void onClick(DialogInterface dialog, int id)
+                                    {
+                                        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+                                    }
+                                });
+                                dlgAlert.setNegativeButton("Give Up", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Toast.makeText(NetPets.this, "What's the point...", Toast.LENGTH_SHORT).show();
+                                    }} );
+                                dlgAlert.setCancelable(true);
+                                dlgAlert.create().show();
+
+                            }
+                             else
+                            {
+                                //todo make this do useful things :P
+                                ((TextView) arg0.getChildAt(SELECTED_ITEM)).setTextColor(Color.WHITE);
+                                NetPetJSON pet = (NetPetJSON) arg0.getItemAtPosition(pos);
+                                //Toast.makeText(NetPets.this, pet.getFileURL(), Toast.LENGTH_SHORT).show();
+                                mywebImage.setImageUrl(pet.getFileURL());
+                            }
+//
                         }
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> arg0) {
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(NetPets.this);
+                        dlgAlert.setMessage("but I can't load that!\nCheck your network settings!");
+                        dlgAlert.setTitle("I'm Sorry Dave...");
+                        dlgAlert.setPositiveButton(getString(R.string.ok), null);
+                        dlgAlert.setCancelable(true);
+                        dlgAlert.create().show();
                     }
                 });
             } catch (Exception e) {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(NetPets.this);
+                dlgAlert.setMessage("but I can't load that!\nCheck your network settings!");
+                dlgAlert.setTitle("I'm Sorry Dave...");
+                dlgAlert.setPositiveButton("Try Again", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+                    }
+                });
+                dlgAlert.setNegativeButton("Give Up", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(NetPets.this, "What's the point...", Toast.LENGTH_SHORT).show();
+                    }} );
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
                 e.printStackTrace();
             }
         }

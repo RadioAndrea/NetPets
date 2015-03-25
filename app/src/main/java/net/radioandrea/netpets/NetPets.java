@@ -40,6 +40,7 @@ public class NetPets extends ActionBarActivity {
     android.support.v7.app.ActionBar actionBar;
     SharedPreferences prefs;
     WebImage mywebImage;
+    String webPage;
 
     private static final int SETTINGRESULT = 1337;
 
@@ -53,6 +54,10 @@ public class NetPets extends ActionBarActivity {
         mywebImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
         mywebImage.setImageResource(R.drawable.world);
         setContentView(mywebImage);
+        if(prefs.getString(getString(R.string.site_key), "").equals(""))
+            webPage = getString(R.string.teton);
+        else
+            webPage = prefs.getString(getString(R.string.site_key), "");
     }
 
 
@@ -89,7 +94,11 @@ public class NetPets extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SETTINGRESULT) {
-            new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+            if(prefs.getString(getString(R.string.site_key), "").equals(""))
+                webPage = getString(R.string.teton);
+            else
+                webPage = prefs.getString(getString(R.string.site_key), "");
+            new NetTask().execute(webPage);
         }
     }
 
@@ -101,7 +110,7 @@ public class NetPets extends ActionBarActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.spinner);
         spinner = (Spinner) actionBar.getCustomView().findViewById(R.id.spinner);
-        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+        new NetTask().execute(webPage);
     }
 
 
@@ -164,7 +173,7 @@ public class NetPets extends ActionBarActivity {
                                 {
                                     public void onClick(DialogInterface dialog, int id)
                                     {
-                                        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+                                        new NetTask().execute(webPage);
                                     }
                                 });
                                 dlgAlert.setNegativeButton("Give Up", new DialogInterface.OnClickListener() {
@@ -205,12 +214,13 @@ public class NetPets extends ActionBarActivity {
                 {
                     public void onClick(DialogInterface dialog, int id)
                     {
-                        new NetTask().execute(prefs.getString(getString(R.string.site_key), ""));
+                        new NetTask().execute(webPage);
                     }
                 });
                 dlgAlert.setNegativeButton("Give Up", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Toast.makeText(NetPets.this, "What's the point...", Toast.LENGTH_SHORT).show();
+                        spinner.setAdapter(null);
                     }} );
                 dlgAlert.setCancelable(true);
                 dlgAlert.create().show();
@@ -224,7 +234,7 @@ public class NetPets extends ActionBarActivity {
 
             protected NetPetJSON(JSONObject pet) {
                 this.pet = pet;
-                this.site = prefs.getString(getString(R.string.site_key), "");
+                this.site = webPage;
             }
 
             public String getFileURL() {
